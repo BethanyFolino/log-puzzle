@@ -14,10 +14,12 @@ HTTP/1.0" 302 528 "-" "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US;
 rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6"
 """
 
-import os
+__author__ = "Bethany Folino"
+
+# import os
 import re
 import sys
-import urllib.request
+# import urllib.request
 import argparse
 
 
@@ -26,8 +28,20 @@ def read_urls(filename):
     extracting the hostname from the filename itself, sorting
     alphabetically in increasing order, and screening out duplicates.
     """
-    # +++your code here+++
-    pass
+    urls = []
+
+    findurls = re.compile("puzzle")
+    with open(filename) as file:
+        for line in findurls.findall(file.read()):
+
+            front_url = "http://www.google.com"
+            back_url = f"{line}"
+            full_url = f"{front_url}{back_url}"
+
+            if full_url not in urls:
+                urls.append(full_url)
+
+    print(urls)
 
 
 def download_images(img_urls, dest_dir):
