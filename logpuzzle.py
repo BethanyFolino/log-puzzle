@@ -14,7 +14,9 @@ HTTP/1.0" 302 528 "-" "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US;
 rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6"
 """
 
-__author__ = "Bethany Folino"
+__author__ = """Bethany Folino with help from Matt Perry, Jacob Short and
+https://stackoverflow.com/questions/23753040/
+keep-a-list-to-prevent-duplicates-efficiency-in-python"""
 
 # import os
 import re
@@ -28,20 +30,20 @@ def read_urls(filename):
     extracting the hostname from the filename itself, sorting
     alphabetically in increasing order, and screening out duplicates.
     """
-    urls = []
-
-    findurls = re.compile("puzzle")
+    result = set()
+    findurls = re.compile(r"\S(\w+)\/(\w+)\/(\w+)\-(\w+)\-(\w+)\/(\w+)\/(\w+)\/(\w+)\-(\D+)\.(\w+)") # noqa - can't split this up, I tried
     with open(filename) as file:
-        for line in findurls.findall(file.read()):
+        contents = file.read()
 
-            front_url = "http://www.google.com"
-            back_url = f"{line}"
-            full_url = f"{front_url}{back_url}"
+    matches = findurls.finditer(contents)
 
-            if full_url not in urls:
-                urls.append(full_url)
+    for item in matches:
+        result.add(item.group(0))
 
-    print(urls)
+    list_result = list(result)
+    sorted_result = sorted(list_result)
+
+    print(sorted_result)
 
 
 def download_images(img_urls, dest_dir):
