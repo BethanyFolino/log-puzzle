@@ -18,10 +18,10 @@ __author__ = """Bethany Folino with help from Matt Perry, Jacob Short and
 https://stackoverflow.com/questions/23753040/
 keep-a-list-to-prevent-duplicates-efficiency-in-python"""
 
-# import os
+import os
 import re
 import sys
-# import urllib.request
+import urllib.request
 import argparse
 
 
@@ -30,20 +30,26 @@ def read_urls(filename):
     extracting the hostname from the filename itself, sorting
     alphabetically in increasing order, and screening out duplicates.
     """
-    result = set()
+    result = set()  # eliminate duplicates
     findurls = re.compile(r"\S(\w+)\/(\w+)\/(\w+)\-(\w+)\-(\w+)\/(\w+)\/(\w+)\/(\w+)\-(\D+)\.(\w+)") # noqa - can't split this up, I tried
     with open(filename) as file:
         contents = file.read()
 
     matches = findurls.finditer(contents)
 
+    finddomainname = filename.split("_")[-1]
+    # finddomainname = re.compile(r"_(\w+).(\w+).(\w+)")
+    # matches2 = finddomainname.finditer(filename)
+
+    # whole_matches = f"{finddomainname}{matches}"
+    # print(whole_matches)
+
     for item in matches:
-        result.add(item.group(0))
+        result.add(f"http://{finddomainname}{item[0]}")
 
-    list_result = list(result)
-    sorted_result = sorted(list_result)
+    sorted_result = sorted(result, key=lambda x: x.split("-")[-1])
 
-    print(sorted_result)
+    return sorted_result
 
 
 def download_images(img_urls, dest_dir):
@@ -54,8 +60,24 @@ def download_images(img_urls, dest_dir):
     to show each local image file.
     Creates the directory if necessary.
     """
-    # +++your code here+++
-    pass
+    # check to see if dest_dir exists, and make one if not
+    if not os.path.exists(dest_dir):
+        os.mkdir(dest_dir)
+    # retrieve URLs, open HTML file and write in it
+    img_count = 0
+    with open(os.path.abspath(os.path.join(dest_dir, "index.html")), "w+") as html: # noqa
+        html.write("<html>")
+        html.write("<body>")
+        for url in img_urls:
+            with open(os.path.abspath(os.path.join(dest_dir, f"img{img_count}")), "w+"): # noqa
+                urllib.request.urlretrieve(url, f"{dest_dir}/img{img_count}")
+            img = "img"
+            html_template_2 = f"<img src={img}{img_count}>"
+            img_count = img_count + 1
+            html.write(html_template_2)
+        html_template_3 = """</body>
+        </html>"""
+        html.write(html_template_3)
 
 
 def create_parser():
